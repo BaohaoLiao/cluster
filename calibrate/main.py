@@ -43,16 +43,17 @@ def main(args):
 
     # Load model and tokenizer
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    config = AutoConfig.from_pretrained(args.model_name_or_path, attn_implementation=args.attn_implementation)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, use_fast=False, legacy=False)
-    ori_model = AutoModelForCausalLM.from_pretrained(args.model_name_or_path, config=config, device_map='cpu', torch_dtype=torch.bfloat16)
+    ori_config = AutoConfig.from_pretrained(args.ori_model_name_or_path, attn_implementation=args.attn_implementation)
+    tokenizer = AutoTokenizer.from_pretrained(args.ori_model_name_or_path, use_fast=False, legacy=False)
+    ori_model = AutoModelForCausalLM.from_pretrained(args.pri_model_name_or_path, config=ori_config, device_map='cpu', torch_dtype=torch.bfloat16)
     
-    clus_model = models.CustomLlamaForCausalLM(config).to(torch.bfloat16)
+    clus_config = AutoConfig.from_pretrained(args.clus_model_name_or_path)
+    clus_model = models.CustomLlamaForCausalLM(clus_config).to(torch.bfloat16)
     logging.info(f"Load state dicts from {args.state_dict_path}")
     state_dicts = torch.load(args.state_dict_path, map_location="cpu")
     clus_model.load_state_dict(state_dicts, strict=True)
 
-    assert args.seqlen <= config.max_position_embeddings, "The sequence length of calibration samples exceed the model's"
+    assert args.seqlen <= ori_config.max_position_embeddings, "The sequence length of calibration samples exceed the model's"
 
     ori_model.eval()
     clus_model.eval()
@@ -89,15 +90,17 @@ def main(args):
 
     if not args.resume:
         logging.info(f"Save clus model.")
-        clus_model.save_pretrained(os.path.join(args.save_dir, "cluster")) # save adapter weights
+        clus_model.save_pretrained(args.save_dir, safe_serialization=False)
         tokenizer.save_pretrained(args.save_dir)
+        clus_config.save_pretrained(args.save_dir)
 
 
 def arg_parse():
     parser = argparse.ArgumentParser(description="Quantize a model")
     parser.add_argument("--seed", type=int, default=2)
     # Model
-    parser.add_argument("--model_name_or_path", type=str, required=True)
+    parser.add_argument("--ori_model_name_or_path", type=str, required=True)
+    parser.add_argument("--clus_model_name_or_path", type=str, required=True)
     parser.add_argument("--state_dict_path", type=str, required=True)
     parser.add_argument(
         "--attn_implementation", type=str, required=False, default="eager", choices=["eager", "sdpa", "flash_attention_2"],
