@@ -20,6 +20,8 @@ def cal(ori_model, clus_model, args, dataloader, logging=None):
     clus_layers = clus_model.model.layers
     ori_model.model.embed_tokens = ori_model.model.embed_tokens.to(args.device)
     ori_model.model.norm = ori_model.model.norm.to(args.device)
+    ori_model.model.rotary_emb = ori_model.model.rotary_emb.to(args.device)
+    clus_model.model.rotary_emb = clus_model.model.rotary_emb.to(args.device)
     
     ori_layers[0] = ori_layers[0].to(args.device)
     dtype = torch.bfloat16
