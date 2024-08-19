@@ -1,4 +1,4 @@
-import os
+from tqdm import tqdm
 import torch
 import torch.nn as nn
 from calibrate.data_utils import get_loaders
@@ -29,7 +29,7 @@ def evaluate(model, tokenizer, args, logging):
             model.config.use_cache = False
             model.eval()
             nlls = []
-            for i in range(nsamples):
+            for i in tqdm(range(nsamples)):
                 batch = testenc[:, (i * args.seqlen) : ((i + 1) * args.seqlen)].to(args.device)
                 outputs = model.model(batch)
                 hidden_states = outputs[0]
