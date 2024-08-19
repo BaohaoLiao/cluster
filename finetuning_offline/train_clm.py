@@ -385,9 +385,7 @@ def main():
             model.load_state_dict(state_dicts, strict=True)
 
     logger.info(model)
-    logger.info(f"Num. trainable: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
     
-
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
     embedding_size = model.get_input_embeddings().weight.shape[0]
