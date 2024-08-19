@@ -61,7 +61,7 @@ def split_combine(weights, labels, size=16):
         start = end
     return rec_labels
 
-def main(save_dir: str, ngpu: int=1):
+def main(save_dir: str="/data/chatgpt/data/baliao/cluster/00_prepare/cluster/tests", ngpu: int=2):
     model = transformers.AutoModelForCausalLM.from_pretrained(
         args.model_name,
         device_map=args.device,
