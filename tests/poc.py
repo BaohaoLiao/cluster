@@ -32,20 +32,20 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
 
     # Define the index and GPU resources for the clustering object
     kmeans.train(x, index)
-
     # Get the resulting centroids
     centroids = faiss.vector_to_array(kmeans.centroids).reshape(num_clusters, vector_dim)
-
     # Get the cluster assignment for each vector
     _, assignments = index.search(x, 1)
     assignments = assignments.flatten()
     return centroids, assignments
+
 
 def combine(xs, size=16):
     outs = []
     for k, v in xs.items():
         outs.append(v.view(-1, size))
     return torch.cat(outs, dim=0)
+
 
 def split_combine(weights, labels, size=16):
     rec_labels = OrderedDict()
