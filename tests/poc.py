@@ -1,13 +1,10 @@
 import copy
+from tqdm import tqdm
 from collections import OrderedDict
 import faiss
 import torch
 import transformers
 
-
-class args:
-    model_name = "/mnt/nushare2/data/baliao/PLLMs/meta-llama/Llama-2-7b-hf"
-    device = "cpu"
 
 def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_fp16=False):
     vector_dim = x.shape[1]
@@ -60,30 +57,32 @@ def split_combine(weights, labels, size=16):
         start = end
     return rec_labels
 
-def main(save_dir: str="/data/chatgpt/data/baliao/cluster/00_prepare/cluster/tests", ngpu: int=2):
+
+def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio: int=8):
     model = transformers.AutoModelForCausalLM.from_pretrained(
-        args.model_name,
-        device_map=args.device,
+        model_name_or_path,
+        device_map='cpu',
     )
 
     layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
     cluster_model = OrderedDict()
     cluster_labels = OrderedDict()
 
-    for i in range(1): # model.config.num_hidden_layers):
+    for i in tqdm(range(model.config.num_hidden_layers)):
+        print("-"*25, f"layer {i}", "-"*25)
         blocks = OrderedDict()
         for k, v in model.state_dict().items():
             if f"model.layers.{i}." in k:
                 if ".".join(k.split(".")[-2:]) in layers:
                     blocks[k] = copy.deepcopy(v).transpose(1, 0).contiguous()
                     
-        combined_blocks = combine(blocks, size=16)
-        centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//8, niter=1, verbose=True, nredo=1, ngpu=ngpu)
+        combined_blocks = combine(blocks, size=size)
+        centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=20, verbose=True, nredo=1, ngpu=ngpu)
         cluster_model[f"layers.{i}"] = centroids
-        cluster_labels.update(split_combine(blocks, labels, size=16))
+        cluster_labels.update(split_combine(blocks, labels, size=size))
 
-    torch.save(cluster_model, f'{save_dir}/cluster_model.pth')
-    torch.save(cluster_labels, f'{save_dir}/cluster_label.pth')
+        torch.save(cluster_model, f'{save_dir}/cluster_model.pth')
+        torch.save(cluster_labels, f'{save_dir}/cluster_label.pth')
 
 
 if __name__=="__main__":
