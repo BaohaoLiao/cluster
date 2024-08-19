@@ -37,10 +37,8 @@ from datasets import load_dataset
 
 import transformers
 from transformers import (
-    CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
     AutoConfig,
-    AutoModelForCausalLM,
     AutoTokenizer,
     HfArgumentParser,
     Trainer,
@@ -197,6 +195,12 @@ class DataTrainingArguments:
     keep_linebreaks: bool = field(
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
+    dataset_dir: Optional[str] = field(
+        default=None, metadata={"help": "The local dir for dataset for offline training."}
+    )
+    metric_path: str = field(
+        default=None, metadata={"help": "The local metric file for offline training."}
+    )
 
     def __post_init__(self):
         if self.streaming:
@@ -277,7 +281,9 @@ def main():
     set_seed(training_args.seed)
 
     # Get the datasets
-    if data_args.dataset_name is not None:
+    if data_args.dataset_dir is not None:
+        raw_datasets = datasets.load_from_disk(data_args.dataset_dir)
+    elif data_args.dataset_name is not None:
         # Downloading and loading a dataset from the hub.
         raw_datasets = load_dataset(
             data_args.dataset_name,
@@ -510,7 +516,10 @@ def main():
                 logits = logits[0]
             return logits.argmax(dim=-1)
 
-        metric = evaluate.load("accuracy")
+        if data_args.metric_path is not None:
+            metric = evaluate.load(data_args.metric_path, module_type="metric")
+        else:
+            metric = evaluate.load("accuracy")
 
         def compute_metrics(eval_preds):
             preds, labels = eval_preds
