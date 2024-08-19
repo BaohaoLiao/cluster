@@ -171,7 +171,7 @@ def cal(ori_model, clus_model, args, dataloader, logging=None):
         else:
             clus_layers[i] = clus_layer.to("cpu")
 
-        del layer, clus_layer
+        del ori_layer, clus_layer
         torch.cuda.empty_cache()
 
     del inps
