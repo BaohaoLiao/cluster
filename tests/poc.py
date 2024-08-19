@@ -1,3 +1,4 @@
+import fire
 import copy
 from tqdm import tqdm
 from collections import OrderedDict
@@ -74,11 +75,12 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio:
         for k, v in model.state_dict().items():
             if f"model.layers.{i}." in k:
                 if ".".join(k.split(".")[-2:]) in layers:
-                    blocks[k] = copy.deepcopy(v).transpose(1, 0).contiguous()
+                    new_k = ".".join(k.split(".")[:-1]) + ".index"
+                    blocks[new_k] = copy.deepcopy(v).transpose(1, 0).contiguous()
                     
         combined_blocks = combine(blocks, size=size)
         centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=20, verbose=True, nredo=1, ngpu=ngpu)
-        cluster_model[f"layers.{i}"] = centroids
+        cluster_model[f"model.layers.{i}.vector_bank"] = centroids
         cluster_labels.update(split_combine(blocks, labels, size=size))
 
         torch.save(cluster_model, f'{save_dir}/cluster_model.pth')
@@ -86,4 +88,4 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio:
 
 
 if __name__=="__main__":
-    main()
+    fire.Fire(main)
