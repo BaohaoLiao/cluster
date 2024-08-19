@@ -356,7 +356,7 @@ def main():
         "token": model_args.token,
         "trust_remote_code": model_args.trust_remote_code,
     }
-    config = AutoConfig.from_pretrained(model_args.model_name_or_path, token=model_args.token, **config_kwargs)
+    config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
 
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
