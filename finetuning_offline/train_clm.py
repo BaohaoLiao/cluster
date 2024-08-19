@@ -357,8 +357,6 @@ def main():
         "trust_remote_code": model_args.trust_remote_code,
     }
     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-    config.vector_bank_length = 11008 * 4096 // 16
-    config.vector_bank_dim = 16
 
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
