@@ -1,6 +1,5 @@
 import copy
 from collections import OrderedDict
-import fire
 import faiss
 import torch
 import transformers
@@ -88,4 +87,4 @@ def main(save_dir: str="/data/chatgpt/data/baliao/cluster/00_prepare/cluster/tes
 
 
 if __name__=="__main__":
-    fire.Fire(main)
+    main()
