@@ -15,7 +15,7 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
     kmeans.niter = niter  # Number of iterations
     kmeans.verbose = verbose  # Print progress
     kmeans.nredo = nredo
-    kmeans.max_points_per_centroid = 1000000000 # otherwise the kmeans implementation sub-samples the training set
+    kmeans.max_points_per_centroid = 10000000 # otherwise the kmeans implementation sub-samples the training set
     
     res = [faiss.StandardGpuResources() for i in range(ngpu)]
     flat_config = []
