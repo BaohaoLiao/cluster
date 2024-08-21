@@ -80,7 +80,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio:
                     blocks[new_k] = copy.deepcopy(v).transpose(1, 0).contiguous()
                     
         combined_blocks = combine(blocks, size=size)
-        centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=20, verbose=True, nredo=1, ngpu=ngpu)
+        centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=1, verbose=True, nredo=1, ngpu=ngpu)
         cluster_model[f"model.layers.{i}.vector_bank"] = centroids
         cluster_labels.update(split_combine(blocks, labels, size=size))
 
