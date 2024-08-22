@@ -63,9 +63,20 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclust
     for k, w in tqdm(ws.items()):
         logger.info(f"Reconstruct {k} ...\n")
         ori_shape = w.shape
+
+        deficiency = ori_shape[1] % size
+        if deficiency > 0:
+            deficiency = size - deficiency
+            pad_zeros = torch.zeros((ori_shape[0], deficiency), dtype=w.dtype)
+            w = torch.cat((w, pad_zeros), dim=1)
+
         reshaped_w = w.view(-1, size)
         rec_w = run_faiss_gpu(reshaped_w.numpy(), nclusters, niter=20, verbose=True, nredo=1, ngpu=ngpu)
-        rec_ws[k] = torch.from_numpy(rec_w).view(ori_shape[0], ori_shape[1])
+
+        if deficiency > 0:
+            rec_ws[k] = torch.from_numpy(rec_w).view(ori_shape[0], -1)[:, :-deficiency]
+        else:
+            rec_ws[k] = torch.from_numpy(rec_w).view(ori_shape[0], ori_shape[1])
         logger.info("\n")
 
     for k in rec_ws.keys():
