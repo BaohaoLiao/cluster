@@ -42,7 +42,8 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
     # Get the cluster assignment for each vector
     _, assignments = index.search(x, 1)
     assignments = assignments.flatten()
-    return centroids, assignments
+    rec_x = centroids[assignments]
+    return rec_x
 
 
 def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclusters: int=64000):
