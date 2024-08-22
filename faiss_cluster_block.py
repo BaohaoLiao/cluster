@@ -5,6 +5,7 @@ from collections import OrderedDict
 import faiss
 import torch
 import transformers
+from safetensors.torch import save_file
 
 
 def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_fp16=False):
@@ -83,10 +84,13 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio:
         centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=20, verbose=True, nredo=1, ngpu=ngpu)
         cluster_model[f"model.layers.{i}.vector_bank"] = centroids
         cluster_labels.update(split_combine(blocks, labels, size=size))
+    
+        save_file(cluster_model, f'{save_dir}/cluster_model.safetensors')
+        save_file(cluster_labels, f'{save_dir}/cluster_label.safetensors')
 
-    print("Saving model ...")
-    torch.save(cluster_model, f'{save_dir}/cluster_model.pth')
-    torch.save(cluster_labels, f'{save_dir}/cluster_label.pth')
+    #print("Saving model ...")
+    #torch.save(cluster_model, f'{save_dir}/cluster_model.pth')
+    #torch.save(cluster_labels, f'{save_dir}/cluster_label.pth')
 
 
 if __name__=="__main__":
