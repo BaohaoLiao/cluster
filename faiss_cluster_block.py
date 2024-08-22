@@ -56,7 +56,7 @@ def split_combine(weights, labels, size=16):
     for k, v in weights.items():
         end = v.shape[0] * v.shape[1] // size
         end = start + end
-        rec_labels[k] = labels[start:end]
+        rec_labels[k] = torch.from_numpy(labels[start:end])
         start = end
     return rec_labels
 
@@ -82,7 +82,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, ratio:
                     
         combined_blocks = combine(blocks, size=size)
         centroids, labels = run_faiss_gpu(combined_blocks, combined_blocks.shape[0]//ratio, niter=20, verbose=True, nredo=1, ngpu=ngpu)
-        cluster_model[f"model.layers.{i}.vector_bank"] = centroids
+        cluster_model[f"model.layers.{i}.vector_bank"] = torch.from_numpy(centroids)
         cluster_labels.update(split_combine(blocks, labels, size=size))
     
         save_file(cluster_model, f'{save_dir}/cluster_model.safetensors')
