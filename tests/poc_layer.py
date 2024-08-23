@@ -6,6 +6,7 @@ from collections import OrderedDict
 import faiss
 import torch
 import transformers
+from safetensors.torch import save_file
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,8 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclust
         device_map='cpu',
     )
 
-    layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
+    layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 'gate_proj.weight', 'up_proj.weight', 'down_proj.weight',
+              'embed_tokens.weight', 'lm_head.weight']
     
     ws = OrderedDict()
     for k, v in model.state_dict().items():
