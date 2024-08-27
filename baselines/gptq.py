@@ -192,8 +192,8 @@ if __name__ == "__main__":
                         level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
 
     parser = argparse.ArgumentParser(description='AutoGPTQ quantize')
-    parser.add_argument('pretrained_model_dir', type=str, help='Repo name')
-    parser.add_argument('output_dir_base', type=str, help='Output base folder')
+    parser.add_argument('--pretrained_model_dir', type=str, help='Repo name')
+    parser.add_argument('--output_dir_base', type=str, help='Output base folder')
     parser.add_argument('--dataset', type=str, default="wikitext", help='Quantisation dataset')
     parser.add_argument('--num_samples', type=int, default=128, help='Number of dataset samples')
     parser.add_argument('--trust_remote_code', action="store_true", help='Trust remote code')
