@@ -85,7 +85,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclust
         logger.info(f"Reconstruction error of {k}: {torch.norm(rec_ws[k] - ws[k])}")
 
     for k, w in rec_ws.items():
-        rec_ws[k] = w.transpose(1, 0).to(torch.bfloat16)
+        rec_ws[k] = w.transpose(1, 0).to(torch.float16)
 
     logger.info("Saving model ...")
     torch.save(rec_ws, f'{save_dir}/cluster_model.pth')
