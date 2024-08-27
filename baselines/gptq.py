@@ -116,8 +116,14 @@ class QuantAutoGPTQ:
             raise ValueError(f"Unsupported dtype: {self.dtype}")
 
         self.logger.info(f"Loading model from {self.pretrained_model_dir} with trust_remote_code={self.trust_remote_code} and dtype={torch_dtype}")
-        model = AutoGPTQForCausalLM.from_pretrained(self.pretrained_model_dir, quantize_config=quantize_config,
-                                                    low_cpu_mem_usage=True, torch_dtype=torch_dtype, trust_remote_code=self.trust_remote_code)
+        model = AutoGPTQForCausalLM.from_pretrained(
+            self.pretrained_model_dir, 
+            quantize_config=quantize_config,
+            low_cpu_mem_usage=True, 
+            torch_dtype=torch_dtype, 
+            trust_remote_code=self.trust_remote_code,
+            device_map="auto",
+        )
 
         self.logger.info(f"Starting quantization to {output_dir} with use_triton={self.use_triton}")
         start_time = time.time()
