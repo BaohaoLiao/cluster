@@ -122,7 +122,7 @@ class QuantAutoGPTQ:
             low_cpu_mem_usage=True, 
             torch_dtype=torch_dtype, 
             trust_remote_code=self.trust_remote_code,
-            device_map="auto",
+            device_map="cuda:0",
         )
 
         self.logger.info(f"Starting quantization to {output_dir} with use_triton={self.use_triton}")
