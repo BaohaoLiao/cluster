@@ -126,10 +126,18 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             pad_zeros = torch.zeros((ori_shape[0], deficiency), dtype=w.dtype)
             w = torch.cat((w, pad_zeros), dim=1)
 
-        reshaped_w = w.view(-1, size).numpy()
         num_split = layers[new_k][0]
         nclusters = layers[new_k][1]
         if num_split > 1:
+            reshaped_ws = [w[:, :ori_shape[1]//2].view(-1, size).numpy(), w[:, ori_shape[1]//2:].view(-1, size).numpy()]
+            rec_w_tmps = []
+            for i in range(num_split):
+                tmp = run_faiss_gpu(reshaped_ws[i], nclusters, niter=20, verbose=True, nredo=1, ngpu=ngpu)
+                rec_w_tmps.append(torch.from_numpy(tmp).view(ori_shape[0], -1))
+            rec_w = torch.cat(rec_w_tmps, dim=1).numpy()
+            
+
+            """
             reshaped_ws = split_array(reshaped_w, num_split)
             rec_w_tmps = []
             for i in range(num_split):
@@ -139,7 +147,9 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
                     )
                 )
             rec_w = np.vstack(rec_w_tmps)
+            """
         else:
+            reshaped_w = w.view(-1, size).numpy()
             rec_w = run_faiss_gpu(reshaped_w, nclusters, niter=20, verbose=True, nredo=1, ngpu=ngpu)
 
         if deficiency > 0:
