@@ -77,6 +77,37 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             'up_proj.weight': [3, 51000],
             'down_proj.weight': [3, 51000],
         }
+    elif bit == 2.28:
+        layers = {
+            'q_proj.weight': [1, 38000],
+            'k_proj.weight': [1, 38000],
+            'v_proj.weight': [1, 38000],
+            'o_proj.weight': [1, 38000],
+            'gate_proj.weight': [2, 50000],
+            'up_proj.weight': [2, 50000],
+            'down_proj.weight': [2, 50000],
+        }
+    elif bit == 2.14:
+        layers = {
+            'q_proj.weight': [1, 19000],
+            'k_proj.weight': [1, 19000],
+            'v_proj.weight': [1, 19000],
+            'o_proj.weight': [1, 19000],
+            'gate_proj.weight': [1, 50000],
+            'up_proj.weight': [1, 50000],
+            'down_proj.weight': [1, 50000],
+        }
+    elif bit == 2:
+        layers = {
+            'q_proj.weight': [1, 27000],
+            'k_proj.weight': [1, 27000],
+            'v_proj.weight': [1, 27000],
+            'o_proj.weight': [1, 27000],
+            'gate_proj.weight': [2, 35000],
+            'up_proj.weight': [2, 35000],
+            'down_proj.weight': [2, 35000],
+        }
+    
     
     
     ws = OrderedDict()
