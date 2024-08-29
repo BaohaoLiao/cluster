@@ -51,21 +51,33 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
     return rec_x
 
 
-def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16):
+def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: int=16):
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
         device_map='cpu',
     )
 
-    layers = {
-        'q_proj.weight': [1, 38000],
-        'k_proj.weight': [1, 38000],
-        'v_proj.weight': [1, 38000],
-        'o_proj.weight': [1, 38000],
-        'gate_proj.weight': [2, 51000],
-        'up_proj.weight': [2, 51000],
-        'down_proj.weight': [2, 51000],
-    }
+    if bit == 4.14:
+        layers = {
+            'q_proj.weight': [1, 38000],
+            'k_proj.weight': [1, 38000],
+            'v_proj.weight': [1, 38000],
+            'o_proj.weight': [1, 38000],
+            'gate_proj.weight': [2, 51000],
+            'up_proj.weight': [2, 51000],
+            'down_proj.weight': [2, 51000],
+        }
+    elif bit == 3:
+        layers = {
+            'q_proj.weight': [1, 57000],
+            'k_proj.weight': [1, 57000],
+            'v_proj.weight': [1, 57000],
+            'o_proj.weight': [1, 57000],
+            'gate_proj.weight': [3, 51000],
+            'up_proj.weight': [3, 51000],
+            'down_proj.weight': [3, 51000],
+        }
+    
     
     ws = OrderedDict()
     for k, v in model.state_dict().items():
