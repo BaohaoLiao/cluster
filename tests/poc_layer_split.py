@@ -129,7 +129,10 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
         num_split = layers[new_k][0]
         nclusters = layers[new_k][1]
         if num_split > 1:
-            reshaped_ws = [w[:, :ori_shape[1]//2].view(-1, size).numpy(), w[:, ori_shape[1]//2:].view(-1, size).numpy()]
+            reshaped_ws = [
+                copy.deepcopy(w[:, :ori_shape[1]//2]).contiguous().view(-1, size).numpy(), 
+                copy.deepcopy(w[:, ori_shape[1]//2:]).contiguous().view(-1, size).numpy()
+            ]
             rec_w_tmps = []
             for i in range(num_split):
                 tmp = run_faiss_gpu(reshaped_ws[i], nclusters, niter=20, verbose=True, nredo=1, ngpu=ngpu)
