@@ -57,7 +57,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
         device_map='cpu',
     )
 
-    if bit == 4.14:
+    if bit == 4.14: # size = 4
         layers = {
             'q_proj.weight': [1, 38000],
             'k_proj.weight': [1, 38000],
@@ -67,7 +67,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             'up_proj.weight': [2, 51000],
             'down_proj.weight': [2, 51000],
         }
-    elif bit == 3:
+    elif bit == 3: # size = 6
         layers = {
             'q_proj.weight': [1, 57000],
             'k_proj.weight': [1, 57000],
@@ -77,7 +77,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             'up_proj.weight': [3, 51000],
             'down_proj.weight': [3, 51000],
         }
-    elif bit == 2.28:
+    elif bit == 2.28: # size = 8
         layers = {
             'q_proj.weight': [1, 38000],
             'k_proj.weight': [1, 38000],
@@ -87,7 +87,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             'up_proj.weight': [2, 50000],
             'down_proj.weight': [2, 50000],
         }
-    elif bit == 2.14:
+    elif bit == 2.14: # size = 8
         layers = {
             'q_proj.weight': [1, 19000],
             'k_proj.weight': [1, 19000],
