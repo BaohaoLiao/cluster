@@ -97,7 +97,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
             'up_proj.weight': [1, 50000],
             'down_proj.weight': [1, 50000],
         }
-    elif bit == 2:
+    elif bit == 2: # size = 9
         layers = {
             'q_proj.weight': [1, 27000],
             'k_proj.weight': [1, 27000],
