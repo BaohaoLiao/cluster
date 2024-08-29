@@ -109,7 +109,6 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, bit: float, size: in
         }
     
     
-    
     ws = OrderedDict()
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) in layers.keys():
