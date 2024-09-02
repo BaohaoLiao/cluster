@@ -23,7 +23,7 @@ class CustomLinear(nn.Module):
         self.deficiency = out_features % cluster_dim
         index_length = in_features * (out_features + self.deficiency) // cluster_dim
         self.cluster = nn.Parameter(torch.empty((num_clusters, cluster_dim), **factory_kwargs))
-        index = torch.empty((index_length,), dtype=torch.uint16, device=device)
+        index = torch.empty((index_length,), dtype=torch.int32, device=device)
         self.register_buffer('index', index)
         if bias:
             self.bias = nn.Parameter(torch.empty(out_features, **factory_kwargs))
@@ -31,7 +31,7 @@ class CustomLinear(nn.Module):
             self.register_parameter('bias', None)
 
     def forward(self, x):
-        vectors = self.cluster[self.index.to(torch.int32)]
+        vectors = self.cluster[self.index]
         if self.deficiency > 0:
             weight = vectors.view(self.in_features, -1)[:, :-self.deficiency]
         else:
