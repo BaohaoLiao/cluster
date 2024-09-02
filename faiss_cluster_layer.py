@@ -76,7 +76,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclust
 
         new_k = ".".join(k.split(".")[:-1])
         cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
-        cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.uint16)
+        cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32)
         save_file(cluster_model, f'{save_dir}/model.safetensors')
 
 
