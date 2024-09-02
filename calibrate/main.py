@@ -173,7 +173,7 @@ def arg_parse():
     # Model
     parser.add_argument("--ori_model_name_or_path", type=str, required=True)
     parser.add_argument("--clus_model_name_or_path", type=str, required=True)
-    parser.add_argument("--state_dict_path", type=str, required=True)
+    parser.add_argument("--state_dict_path", type=str)
     parser.add_argument(
         "--attn_implementation", type=str, required=False, default="eager", choices=["eager", "sdpa", "flash_attention_2"],
         help="Attention implementation that the model works with",
