@@ -1,2 +1,2 @@
 from models.llama import CustomLlamaForCausalLM
-from models.llama import CustomLlamaForCausalLM as ClusterLayerLlamaForCausalLM
+from models.llama_layer import CustomLlamaForCausalLM as ClusterLayerLlamaForCausalLM
