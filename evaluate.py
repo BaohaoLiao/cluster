@@ -8,6 +8,10 @@ from transformers import AutoTokenizer, AutoConfig
 from calibrate.evaluate import evaluate
 import models
 
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 def main(args):
     # Initialization
