@@ -8,7 +8,10 @@ import torch
 import transformers
 from safetensors.torch import save_file
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_fp16=False):
     vector_dim = x.shape[1]
@@ -45,24 +48,23 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
     return centroids, assignments
 
 
-def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclusters: int=65500):
+def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, nclusters: int=65500):
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
         device_map='cpu',
     )
 
     layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 
-              'gate_proj.weight', 'up_proj.weight', 'down_proj.weight',
-              'embed_tokens.weight', 'lm_head.weight']
+              'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
     
     ws = OrderedDict()
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) in layers:
-            ws[k] = copy.deepcopy(v.transpose(1, 0).contiguous())
+            ws[k] = copy.deepcopy(v.transpose(1, 0).contiguous()) # transpose has better performance
 
     cluster_model = OrderedDict()
     for k, w in tqdm(ws.items()):
-        logger.info(f"Reconstruct {k} ...\n")
+        logging.info(f"Reconstruct {k} ...\n")
         ori_shape = w.shape
 
         deficiency = ori_shape[1] % size
@@ -76,9 +78,22 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=16, nclust
 
         new_k = ".".join(k.split(".")[:-1])
         cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
-        cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32)
-        save_file(cluster_model, f'{save_dir}/model.safetensors')
+        cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
+    # Add the missing layers
+    for k, v in model.state_dict().items():
+        if ".".join(k.split(".")[-2:]) not in layers:
+            logging.info(f"Add {k}")
+            cluster_model[k] = v
+
+    # Save for easy loading
+    save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
+    tokenizer = transformers.AutoTokenizer.from_pretrained(model_name_or_path)
+    tokenizer.save_pretrained(save_dir)
+    config = transformers.AutoConfig.from_pretrained(model_name_or_path)
+    config.num_clusters = nclusters
+    config.cluster_dim = size
+    config.save_pretrained(save_dir)
 
 if __name__=="__main__":
     fire.Fire(main)

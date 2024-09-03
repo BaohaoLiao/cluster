@@ -169,7 +169,7 @@ def main(args):
 
 def arg_parse():
     parser = argparse.ArgumentParser(description="Quantize a model")
-    parser.add_argument("--seed", type=int, default=2)
+    parser.add_argument("--seed", type=int, default=42)
     # Model
     parser.add_argument("--ori_model_name_or_path", type=str, required=True)
     parser.add_argument("--clus_model_name_or_path", type=str, required=True)
@@ -181,7 +181,7 @@ def arg_parse():
     # Calibration data
     parser.add_argument("--calib_dataset", type=str, default="wikitext2", choices=["wikitext2", "ptb", "c4", "mix", "pile"])
     parser.add_argument("--nsamples", type=int, default=128, help="Number of calibration data samples")
-    parser.add_argument("--seqlen", type=int, default=1024, help="Sequence length of calibration sample")
+    parser.add_argument("--seqlen", type=int, default=2048, help="Sequence length of calibration sample")
     # Training
     parser.add_argument("--lr", type=float, default=0.005, help="Learning rate")
     parser.add_argument("--wd", type=float, default=0.1, help="Weight decay")
