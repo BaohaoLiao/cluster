@@ -62,9 +62,11 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         if ".".join(k.split(".")[-2:]) in layers:
             ws[k] = copy.deepcopy(v.transpose(1, 0).contiguous()) # transpose has better performance
 
+    logging.info("-"*20, " Clustering ", "-"*20)
     cluster_model = OrderedDict()
     for k, w in tqdm(ws.items()):
-        logging.info(f"Reconstruct {k} ...\n")
+        logging.info("\n")
+        logging.info(f"cluster {k} ...\n")
         ori_shape = w.shape
 
         deficiency = ori_shape[1] % size
@@ -81,12 +83,14 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
     # Add the missing layers
+    logging.info("-"*20, " Adding missing layers ", "-"*20)
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) not in layers:
             logging.info(f"Add {k}")
             cluster_model[k] = v
 
     # Save for easy loading
+    logging.info("-"*20, " Saving models ", "-"*20)
     save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name_or_path)
     tokenizer.save_pretrained(save_dir)
