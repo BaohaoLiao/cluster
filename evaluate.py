@@ -37,6 +37,7 @@ def arg_parse():
     # Calibration data
     parser.add_argument("--seqlen", type=int, default=2048, help="Sequence length of calibration sample")
     parser.add_argument("--cache_dir", default="./cache", type=str, help="Cache dir of dataset, leading to faster debug")
+    parser.add_argument("--eval_ppl", default=True, action="store_false")
     args = parser.parse_args()
     return args
 
