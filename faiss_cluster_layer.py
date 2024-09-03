@@ -90,7 +90,6 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
             cluster_model[k] = v
 
     # Save for easy loading
-    logging.info(f"{'-'*20} Saving model {'-'*20}")
     save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name_or_path)
     tokenizer.save_pretrained(save_dir)
