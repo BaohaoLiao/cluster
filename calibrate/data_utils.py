@@ -39,10 +39,10 @@ def get_pile(tokenizer, nsamples, seed, seqlen):
     return trainloader, None
 
 
-def get_ptb(tokenizer, nsamples, seed, seqlen):
+def get_ptb(tokenizer, nsamples, seed, seqlen, cache_dir):
     print("get ptb")
-    traindata = load_dataset('ptb_text_only', 'penn_treebank', split='train')
-    valdata = load_dataset('ptb_text_only', 'penn_treebank', split='validation')
+    traindata = load_from_disk(f"{cache_dir}/ptb/train")
+    valdata = load_from_disk(f"{cache_dir}/ptb/validation")
     trainenc = tokenizer("\n\n".join(traindata['sentence']), return_tensors='pt')
     testenc = tokenizer("\n\n".join(valdata['sentence']), return_tensors='pt')
     random.seed(seed)
@@ -105,7 +105,7 @@ def get_loaders(name, tokenizer, cache_dir, nsamples=128, seed=0, seqlen=2048):
     if 'pile' in name:
         return get_pile(tokenizer, nsamples, seed, seqlen)
     if 'ptb' in name: 
-        return get_ptb(tokenizer, nsamples, seed, seqlen)
+        return get_ptb(tokenizer, nsamples, seed, seqlen, cache_dir)
     if 'c4' in name:
         return get_c4(tokenizer, nsamples, seed, seqlen, cache_dir)
     if 'mix' in name:

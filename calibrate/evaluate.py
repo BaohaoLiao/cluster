@@ -10,8 +10,8 @@ def evaluate(model, tokenizer, args, logging):
     model = model.to(args.device, dtype=torch.bfloat16)
     
     if args.eval_ppl:
-        for dataset in ["wikitext2", "c4"]:
-            dataloader, testloader = get_loaders(
+        for dataset in ["wikitext2", "c4", "ptb"]:
+            _, testloader = get_loaders(
                 dataset,
                 tokenizer,
                 args.cache_dir,
