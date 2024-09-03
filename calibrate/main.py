@@ -162,7 +162,7 @@ def main(args):
 
     if not args.resume:
         logging.info(f"Save cluster model.")
-        clus_model.save_pretrained(args.save_dir, safe_serialization=False)
+        clus_model.save_pretrained(args.save_dir) #, safe_serialization=False)
         tokenizer.save_pretrained(args.save_dir)
         clus_config.save_pretrained(args.save_dir)
 
