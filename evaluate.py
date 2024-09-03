@@ -36,7 +36,6 @@ def arg_parse():
     parser.add_argument("--model_name_or_path", type=str, required=True)
     # Calibration data
     parser.add_argument("--calib_dataset", type=str, default="wikitext2", choices=["wikitext2", "ptb", "c4", "mix", "pile"])
-    parser.add_argument("--nsamples", type=int, default=128, help="Number of calibration data samples")
     parser.add_argument("--seqlen", type=int, default=2048, help="Sequence length of calibration sample")
     parser.add_argument("--cache_dir", default="./cache", type=str, help="Cache dir of dataset, leading to faster debug")
     args = parser.parse_args()
