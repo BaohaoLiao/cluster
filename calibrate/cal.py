@@ -167,8 +167,8 @@ def cal(ori_model, clus_model, args, dataloader, logging=None):
                         )[0]
             clus_layers[i] = clus_layer.to("cpu")
             ori_layers[i] = ori_layer.to("cpu")
-            vector_banks[i] = vector_bank_state_dict(clus_layer)
-            torch.save(vector_banks, os.path.join(args.save_dir, f"vector_banks.pth"))
+            #vector_banks[i] = vector_bank_state_dict(clus_layer)
+            #torch.save(vector_banks, os.path.join(args.save_dir, f"vector_banks.pth"))
         else:
             clus_layers[i] = clus_layer.to("cpu")
             ori_layers[i] = ori_layer.to("cpu")
