@@ -85,7 +85,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         #if torch_dtype == "float16":
         #    cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
         #else:
-        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
+        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
     # Add the missing layers
@@ -93,7 +93,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) not in layers:
             logging.info(f"Add {k}")
-            cluster_model[k] = v.to(torch.bfloat16)
+            cluster_model[k] = v.to(torch.float16)
 
     # Save for easy loading
     logging.info(f"{'-'*20} Saving tokenizer and config {'-'*20}")

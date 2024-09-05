@@ -7,7 +7,7 @@ from calibrate.data_utils import get_loaders
 def evaluate(model, tokenizer, args, logging):
     logging.info("=== start evaluation ===")
     results = {}
-    model = model.to(args.device, dtype=torch.bfloat16)
+    model = model.to(args.device, dtype=torch.float16)
     
     if args.eval_ppl:
         for dataset in ["wikitext2", "c4", "ptb"]:
