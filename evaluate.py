@@ -25,7 +25,8 @@ def main(args):
         args.model_name_or_path,
         config=config,
         device_map='cpu', 
-        torch_dtype=torch.bfloat16
+        #torch_dtype=torch.bfloat16
+        torch_dtype=config.torch_dtype,
     )
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     assert args.seqlen <= config.max_position_embeddings, "The sequence length of calibration samples exceed the model's"

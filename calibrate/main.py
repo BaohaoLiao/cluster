@@ -110,14 +110,21 @@ def main(args):
     args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     ori_config = AutoConfig.from_pretrained(args.ori_model_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(args.ori_model_name_or_path) #, use_fast=False, legacy=False)
-    ori_model = AutoModelForCausalLM.from_pretrained(args.ori_model_name_or_path, config=ori_config, device_map='cpu', torch_dtype=torch.bfloat16)
+    ori_model = AutoModelForCausalLM.from_pretrained(
+        args.ori_model_name_or_path, 
+        config=ori_config, 
+        device_map='cpu', 
+        #torch_dtype=torch.bfloat16
+        torch_dtype=ori_config.torch_dtype,
+    )
     
     clus_config = AutoConfig.from_pretrained(args.clus_model_name_or_path)
     clus_model = models.ClusterLayerLlamaForCausalLM.from_pretrained(
         args.clus_model_name_or_path,
         config=clus_config,
         device_map='cpu', 
-        torch_dtype=torch.bfloat16
+        #torch_dtype=torch.bfloat16,
+        torch_dtype=clus_config.torch_dtype,
     )
     """
     clus_model = models.CustomLlamaForCausalLM(clus_config).to(torch.bfloat16)

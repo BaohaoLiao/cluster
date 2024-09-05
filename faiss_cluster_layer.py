@@ -53,6 +53,8 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         model_name_or_path,
         device_map='cpu',
     )
+    config = transformers.AutoConfig.from_pretrained(model_name_or_path)
+    torch_dtype = config.torch_dtype
 
     layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 
               'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
@@ -79,7 +81,11 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         centroids, indices = run_faiss_gpu(reshaped_w.numpy(), nclusters, niter=20, verbose=True, nredo=1, ngpu=ngpu)
 
         new_k = ".".join(k.split(".")[:-1])
-        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
+
+        if torch_dtype == "float16":
+            torch_dtype[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
+        else:
+            cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
     # Add the missing layers
