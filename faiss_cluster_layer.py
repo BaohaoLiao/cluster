@@ -53,8 +53,8 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         model_name_or_path,
         device_map='cpu',
     )
-    config = transformers.AutoConfig.from_pretrained(model_name_or_path)
-    torch_dtype = config.torch_dtype
+    #config = transformers.AutoConfig.from_pretrained(model_name_or_path)
+    #torch_dtype = config.torch_dtype
 
     layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 
               'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
@@ -82,10 +82,10 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
 
         new_k = ".".join(k.split(".")[:-1])
 
-        if torch_dtype == "float16":
-            cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
-        else:
-            cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
+        #if torch_dtype == "float16":
+        #    cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
+        #else:
+        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
     # Add the missing layers
@@ -93,16 +93,19 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) not in layers:
             logging.info(f"Add {k}")
-            cluster_model[k] = v
+            cluster_model[k] = v.to(torch.bfloat16)
 
     # Save for easy loading
-    save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
+    logging.info(f"{'-'*20} Saving tokenizer and config {'-'*20}")
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name_or_path)
     tokenizer.save_pretrained(save_dir)
     config = transformers.AutoConfig.from_pretrained(model_name_or_path)
     config.num_clusters = nclusters
     config.cluster_dim = size
     config.save_pretrained(save_dir)
+
+    logging.info(f"{'-'*20} Saving model {'-'*20}")
+    save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
 
 if __name__=="__main__":
     fire.Fire(main)
