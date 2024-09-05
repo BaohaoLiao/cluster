@@ -83,7 +83,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         new_k = ".".join(k.split(".")[:-1])
 
         if torch_dtype == "float16":
-            torch_dtype[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
+            cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
         else:
             cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.bfloat16)
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
