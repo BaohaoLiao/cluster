@@ -38,7 +38,7 @@ def main(model_name_or_path, gpu_idx, save_dir, n_vocab=500, device="cuda:0"):
             logging.info(f"Generating {i}th sample on GPU {gpu_idx}")
             input_ids = torch.tensor([[i]]).to(device)
             outputs1 = model.generate(input_ids, do_sample=False, max_length=j)
-            outputs = model.generate(outputs1, do_sample=True, max_length=2048)
+            outputs = model.generate(outputs1, do_sample=True, max_length=1024)
             gen_text = tokenizer.batch_decode(outputs, skip_special_tokens=True)
             text_dict = {"text" : gen_text[0]}
             with open(f"{save_dir}/gen.chunk.{str(gpu_idx).zfill(2)}.jsonl", "a") as f:
