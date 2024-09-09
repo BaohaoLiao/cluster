@@ -34,7 +34,7 @@ def main(model_name_or_path, gpu_idx, save_dir, n_vocab=500):
 
     for j in range(3 + outer_loop, 6):
         for i in range(int(gpu_idx) * n_vocab + inner_loop, (int(gpu_idx)+1) * n_vocab):
-            logging.into(f"Generating {i}th sample on GPU {gpu_idx}")
+            logging.info(f"Generating {i}th sample on GPU {gpu_idx}")
             input_ids = torch.tensor([[i]]).cuda()
             outputs1 = model.generate(input_ids, do_sample=False, max_length=j)
             outputs = model.generate(outputs1, do_sample=True, max_length=2048)
