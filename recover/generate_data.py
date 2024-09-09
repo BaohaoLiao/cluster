@@ -2,6 +2,7 @@ import os
 import json
 import fire
 import logging
+from tqdm import tqdm
 import torch
 import transformers
 
@@ -37,7 +38,7 @@ def main(model_name_or_path, save_dir, shard_idx, num_shards, device="cuda:0"):
         os.mkdir(save_dir)
 
     for j in range(3 + outer_loop, 6):
-        for i in range(int(shard_idx) * n_vocab + inner_loop, (int(shard_idx)+1) * n_vocab):
+        for i in tqdm(range(int(shard_idx) * n_vocab + inner_loop, (int(shard_idx)+1) * n_vocab)):
             logging.info(f"Generating {i}th sample for {shard_idx}/{num_shards} shard")
             input_ids = torch.tensor([[i]]).to(device)
             outputs1 = model.generate(input_ids, do_sample=False, max_length=j)
