@@ -14,7 +14,10 @@ logging.basicConfig(
 
 def main(model_name_or_path, gpu_idx, save_dir, n_vocab=500):
     logging.info(f"{'-'*20} Loading model and tokenizer {'-'*20}")
-    model = transformers.AutoModelForCausalLM.from_pretrained(model_name_or_path)
+    model = transformers.AutoModelForCausalLM.from_pretrained(
+        model_name_or_path,
+        torch_dtype=torch.bfloat16,
+    )
     tokenizer = transformers.AutoTokenizer.from_pretrained(model_name_or_path)
 
     if os.path.exists(f"{save_dir}/gen.chunk.{str(gpu_idx).zfill(2)}.jsonl"):
