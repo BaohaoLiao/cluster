@@ -7,6 +7,7 @@ import faiss
 import torch
 import transformers
 from safetensors.torch import save_file
+from huggingface_hub import save_torch_state_dict
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -105,7 +106,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
     config.save_pretrained(save_dir)
 
     logging.info(f"{'-'*20} Saving model {'-'*20}")
-    save_file(cluster_model, f'{save_dir}/model.safetensors', metadata={"format": "pt"})
+    save_torch_state_dict(cluster_model, save_dir, metadata={"format": "pt"})
 
 if __name__=="__main__":
     fire.Fire(main)
