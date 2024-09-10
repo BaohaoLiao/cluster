@@ -23,9 +23,6 @@ class ModelArguments:
     teacher_model_path_or_name: Optional[str] = field(
         default="test-input", metadata={"help": "Input model relative manifold path"}
     )
-    output_model_filename: Optional[str] = field(
-        default="test-output", metadata={"help": "Output model relative manifold path"}
-    )
     output_model_local_path: str = field(
         default=None, metadata={"help": "Output model local path, do not set manually"}
     )
