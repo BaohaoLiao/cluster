@@ -68,12 +68,8 @@ class TrainingArguments(transformers.TrainingArguments):
 
 
 def process_args():
-    parser = transformers.HfArgumentParser(
-        (ModelArguments, DataArguments, TrainingArguments)
-    )
+    parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
-    os.makedirs(model_args.local_dir, exist_ok=True)
-
     assert model_args.output_model_local_path is not None
+    os.makedirs(model_args.output_model_local_path, exist_ok=True)
     return model_args, data_args, training_args
