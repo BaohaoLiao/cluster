@@ -7,13 +7,10 @@
 
 import functools
 import inspect
-
-from collections import defaultdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Union
 
 from . import utils
 import torch
-from apex import amp
 from fairscale.nn.data_parallel import (
     FullyShardedDataParallel as FullyShardedDDP,
     ShardedDataParallel as ShardedDDP,
@@ -26,8 +23,11 @@ from transformers.modeling_utils import PreTrainedModel, unwrap_model
 from transformers.trainer_pt_utils import (
     get_module_class_from_name,
 )
-from transformers.trainer_utils import FSDPOption, has_length, ShardedDDPOption
-from transformers.utils import is_torch_neuroncore_available, logging
+from transformers.trainer_utils import FSDPOption, ShardedDDPOption
+from transformers.utils import is_torch_neuroncore_available, logging, is_apex_available
+
+if is_apex_available():
+    from apex import amp
 
 logger = logging.get_logger(__name__)
 local_rank = utils.get_local_rank()
