@@ -11,11 +11,13 @@ from typing import Any, Dict, Union
 
 from . import utils
 import torch
+"""
 from fairscale.nn.data_parallel import (
     FullyShardedDataParallel as FullyShardedDDP,
     ShardedDataParallel as ShardedDDP,
 )
 from fairscale.nn.wrap import auto_wrap
+"""
 from torch import nn
 from torch.nn import functional as F, MSELoss
 from transformers import Trainer
@@ -119,6 +121,7 @@ class KDTrainer(Trainer):
 
         return loss.detach()
 
+    """
     def _wrap_model(self, model, training=True, dataloader=None):
         if self.args.use_ipex:
             dtype = torch.bfloat16 if self.use_cpu_amp else torch.float32
@@ -279,3 +282,4 @@ class KDTrainer(Trainer):
             )
 
         return model
+    """
