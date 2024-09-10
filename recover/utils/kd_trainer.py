@@ -25,7 +25,7 @@ from transformers.modeling_utils import PreTrainedModel, unwrap_model
 from transformers.trainer_pt_utils import (
     get_module_class_from_name,
 )
-from transformers.trainer_utils import FSDPOption, ShardedDDPOption
+#from transformers.trainer_utils import FSDPOption, ShardedDDPOption
 from transformers.utils import is_torch_neuroncore_available, logging, is_apex_available
 
 if is_apex_available():
