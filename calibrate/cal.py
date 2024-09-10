@@ -6,7 +6,7 @@ import copy
 import torch
 import torch.nn as nn
 
-from calibrate.utils import NativeScalerWithGradNormCount, get_parameters, vector_bank_state_dict
+from calibrate.utils import NativeScalerWithGradNormCount, get_parameters
 
 
 def cal(ori_model, clus_model, args, dataloader, logging=None):

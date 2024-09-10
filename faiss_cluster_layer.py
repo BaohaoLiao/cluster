@@ -49,7 +49,13 @@ def run_faiss_gpu(x, num_clusters, niter=20, verbose=True, nredo=1, ngpu=1, use_
     return centroids, assignments
 
 
-def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, nclusters: int=65500):
+def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, nclusters: int=65500, dtype="bf16"):
+    if dtype == "bf16":
+        torch_dtype = torch.bfloat16
+    else:
+        torch_dtype = torch.float16
+    
+
     model = transformers.AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
         device_map='cpu',
@@ -86,7 +92,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
         #if torch_dtype == "float16":
         #    cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
         #else:
-        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch.float16)
+        cluster_model[new_k + ".cluster"] = torch.from_numpy(centroids).to(torch_dtype)
         cluster_model[new_k + ".index"] = torch.from_numpy(indices).to(torch.int32) # save_file doesn't support saving uint16
 
     # Add the missing layers
@@ -94,7 +100,7 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
     for k, v in model.state_dict().items():
         if ".".join(k.split(".")[-2:]) not in layers:
             logging.info(f"Add {k}")
-            cluster_model[k] = v.to(torch.float16)
+            cluster_model[k] = v.to(torch_dtype)
 
     # Save for easy loading
     logging.info(f"{'-'*20} Saving tokenizer and config {'-'*20}")
