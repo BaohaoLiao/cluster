@@ -45,7 +45,7 @@ def train():
         model_args.student_model_path_or_name,
         torch_dtype=dtype,
         low_cpu_mem_usage=True,
-        device_map=None if len(training_args.fsdp) > 0 else "auto",
+        #device_map=None if len(training_args.fsdp) > 0 else "auto",
     )
     model.cuda()
 
@@ -55,7 +55,7 @@ def train():
             cache_dir=training_args.cache_dir,
             torch_dtype=dtype,
             low_cpu_mem_usage=True,
-            device_map=None if len(training_args.fsdp) > 0 else "auto",
+            #device_map=None if len(training_args.fsdp) > 0 else "auto",
         )
         teacher_model.eval()
         teacher_model.cuda()
