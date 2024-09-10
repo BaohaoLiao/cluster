@@ -14,9 +14,6 @@ import transformers
 
 @dataclass
 class ModelArguments:
-    local_dir: str = field(
-        default=None, metadata={"help": "Local Path of storing inputs and outputs "}
-    )
     student_model_path_or_name: Optional[str] = field(
         default="test-input", metadata={"help": "Input model relative manifold path"}
     )
@@ -78,10 +75,5 @@ def process_args():
 
     os.makedirs(model_args.local_dir, exist_ok=True)
 
-    assert model_args.output_model_local_path is None
-
-    model_args.output_model_local_path = os.path.join(
-        model_args.local_dir, "models", str(model_args.output_model_filename)
-    )
-
+    assert model_args.output_model_local_path is not None
     return model_args, data_args, training_args
