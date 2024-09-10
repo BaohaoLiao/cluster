@@ -31,16 +31,16 @@ def set_seed(seed):
 
 def get_train_val_dataset(train_path, valid_path=None):
     f = open(train_path, "r", encoding="utf-8")
-    data = []
+    train_data = []
     while True:
         line = f.readline()
         if not line:
             break
-        data.append(json.loads(line))
+        train_data.append(json.loads(line))
     f.close()
-    train_data = []
-    valid_data = []
-    if valid_path:
+    valid_data = None
+    if valid_path is not None:
+        valid_data = []
         f = open(valid_path, "r", encoding="utf-8")
         while True:
             line = f.readline()
@@ -48,10 +48,6 @@ def get_train_val_dataset(train_path, valid_path=None):
                 break
             valid_data.append(json.loads(line))
         f.close()
-        train_data = data
-    else:
-        train_data = data[10000:]
-        valid_data = data[:10000]
     return train_data, valid_data
 
 

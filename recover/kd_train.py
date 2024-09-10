@@ -85,9 +85,11 @@ def train():
     train_data = datautils.CustomJsonDataset(
         train_dataset, tokenizer, block_size=training_args.model_max_length
     )
-    valid_data = datautils.CustomJsonDataset(
-        valid_dataset, tokenizer, block_size=min(training_args.model_max_length, 1024)
-    )
+    valid_data = None
+    if valid_dataset is not None:
+        valid_data = datautils.CustomJsonDataset(
+            valid_dataset, tokenizer, block_size=min(training_args.model_max_length, 1024)
+        )
     model.config.use_cache = False
     if training_args.use_kd:
         myTrainer = KDTrainer
