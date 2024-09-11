@@ -207,6 +207,9 @@ def train():
         cache_dir=training_args.cache_dir,
         torch_dtype=torch.bfloat16,
     )
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    logger.info(model)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
@@ -232,6 +235,14 @@ def train():
     )
 
     data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
+
+    logger.info("***** Running training *****")
+    logger.info(f"  Num examples = {len(data_module["train_dataset"])}")
+    logger.info(f"  Num Epochs = {training_args.num_train_epochs}")
+    logger.info(f"  Instantaneous batch size per device = {training_args.per_device_train_batch_size}")
+    logger.info(f"  Gradient Accumulation steps = {training_args.gradient_accumulation_steps}")
+    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
+                    
     trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
     trainer.train()
     trainer.save_state()
