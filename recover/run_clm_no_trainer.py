@@ -634,7 +634,7 @@ def main():
     logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
     logger.info(f"  Gradient Accumulation steps = {args.gradient_accumulation_steps}")
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
-    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.3f} ({trainable_params} / {total_params})")
+    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
     if args.teacher_model_name_or_path is not None:
         logger.info(f"  Num trainable / Num total of teacher model = {teacher_trainable_params} / {teacher_total_params}")
 
@@ -691,7 +691,7 @@ def main():
                 if args.teacher_model_name_or_path is not None:
                     with torch.no_grad():
                         teacher_outputs = teacher_model(**batch)
-                        
+
                     teacher_logits = teacher_outputs.get("logits")
                     del teacher_outputs
                     student_logits = outputs.get("logits")
