@@ -474,6 +474,8 @@ def main():
         for param in teacher_model.parameters():
             param.requires_grad = False
         teacher_model.config.use_cache = False
+        teacher_total_params = sum(p.numel() for p in teacher_model.parameters())
+        teacher_trainable_params = sum(p.numel() for p in teacher_model.parameters() if p.requires_grad)
         logger.info(teacher_model)
 
     # Preprocessing the datasets.
@@ -632,7 +634,9 @@ def main():
     logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
     logger.info(f"  Gradient Accumulation steps = {args.gradient_accumulation_steps}")
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
-    logger.info(f"  Num trainable / Num total = {total_params} / {trainable_params}")
+    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.3f} ({trainable_params} / {total_params})")
+    if args.teacher_model_name_or_path is not None:
+        logger.info(f"  Num trainable / Num total of teacher model = {teacher_trainable_params} / {teacher_total_params}")
 
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)

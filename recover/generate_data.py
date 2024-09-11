@@ -25,8 +25,8 @@ def main(model_name_or_path, save_dir, shard_idx, num_shards, device="cuda:0"):
     n_vocab = model.config.vocab_size // num_shards #each index in the vocab will be used as the first token
     logging.info(f"Generate {n_vocab} samples for {shard_idx}/{num_shards} shard")
 
-    if os.path.exists(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.jsonl"):
-        with open(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.jsonl", "r") as f:
+    if os.path.exists(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.json"):
+        with open(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.json", "r") as f:
             lines = f.readlines()
             inner_loop = len(lines) % n_vocab
             outer_loop = len(lines) // n_vocab
@@ -45,7 +45,7 @@ def main(model_name_or_path, save_dir, shard_idx, num_shards, device="cuda:0"):
             outputs = model.generate(outputs1, do_sample=True, max_length=1024)
             gen_text = tokenizer.batch_decode(outputs, skip_special_tokens=True)
             text_dict = {"text" : gen_text[0]}
-            with open(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.jsonl", "a") as f:
+            with open(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.json", "a") as f:
                 f.write(json.dumps(text_dict))
                 f.write('\n')
 
