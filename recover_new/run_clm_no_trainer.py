@@ -255,6 +255,11 @@ def parse_args():
         "--only_train_cluster_params",
         action="store_true",
     )
+    parser.add_argument(
+        "--logging_steps",
+       type=int,
+       default=None
+    )
 
     args = parser.parse_args()
 
@@ -443,13 +448,15 @@ def main():
     if len(tokenizer) > embedding_size:
         model.resize_token_embeddings(len(tokenizer))
 
-
     if args.only_train_cluster_params:
         for name, param in model.named_parameters():
             if "cluster" in name:
                 param.requires_grad = True
             else:
                 param.requires_grad = False
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    logger.info(model)
 
     if args.teacher_model_name_or_path is not None:
         logger.info("Loading teacher model ...")
@@ -467,6 +474,7 @@ def main():
         for param in teacher_model.parameters():
             param.requires_grad = False
         teacher_model.config.use_cache = False
+        logger.info(teacher_model)
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.
@@ -615,6 +623,7 @@ def main():
 
     # Train!
     total_batch_size = args.per_device_train_batch_size * accelerator.num_processes * args.gradient_accumulation_steps
+    
 
     logger.info("***** Running training *****")
     logger.info(f"  Num examples = {len(train_dataset)}")
@@ -623,6 +632,8 @@ def main():
     logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
     logger.info(f"  Gradient Accumulation steps = {args.gradient_accumulation_steps}")
     logger.info(f"  Total optimization steps = {args.max_train_steps}")
+    logger.info(f"  Num trainable / Num total = {total_params} / {trainable_params}")
+
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
     completed_steps = 0
@@ -700,6 +711,9 @@ def main():
             if accelerator.sync_gradients:
                 progress_bar.update(1)
                 completed_steps += 1
+
+            if (args.logging_steps is not None) and (completed_steps % args.logging_steps == 0):
+                logger.info(f"  epoch {epoch} step {completed_steps}\t|| loss: {loss.item():.3f} \t lr: {optimizer.lr:.6f}")
 
             if isinstance(checkpointing_steps, int):
                 if completed_steps % checkpointing_steps == 0 and accelerator.sync_gradients:
