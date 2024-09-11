@@ -260,6 +260,11 @@ def parse_args():
        type=int,
        default=None
     )
+    parser.add_argument(
+        "--max_train_samples",
+       type=int,
+       default=None
+    )
 
     args = parser.parse_args()
 
@@ -393,6 +398,9 @@ def main():
                 split=f"train[{args.validation_split_percentage}%:]",
                 **dataset_args,
             )
+
+    if args.max_train_samples is not None:
+        raw_datasets["train"] = raw_datasets["train"].shuffle(seed=args.seed).select(range(args.max_train_samples))
 
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.
