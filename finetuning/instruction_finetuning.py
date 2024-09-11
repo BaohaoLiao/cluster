@@ -211,6 +211,9 @@ def train():
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.warning(model)
 
+    for name, p in model.named_parameters():
+        logger.warning(name, p.requires_grad)
+
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
