@@ -14,10 +14,10 @@
 #    limitations under the License.
 
 import copy
-import logging
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence
 
+from accelerate.logging import get_logger
 import torch
 import transformers
 import utils
@@ -26,6 +26,7 @@ from transformers import Trainer
 
 from models.llama_layer import CustomLlamaForCausalLM
 
+logger = get_logger(__name__)
 
 IGNORE_INDEX = -100
 DEFAULT_PAD_TOKEN = "[PAD]"
@@ -133,10 +134,10 @@ class SupervisedDataset(Dataset):
 
     def __init__(self, data_path: str, tokenizer: transformers.PreTrainedTokenizer):
         super(SupervisedDataset, self).__init__()
-        logging.warning("Loading data...")
+        logger.warning("Loading data...")
         list_data_dict = utils.jload(data_path)
 
-        logging.warning("Formatting inputs...")
+        logger.warning("Formatting inputs...")
         prompt_input, prompt_no_input = PROMPT_DICT["prompt_input"], PROMPT_DICT["prompt_no_input"]
         sources = [
             prompt_input.format_map(example) if example.get("input", "") != "" else prompt_no_input.format_map(example)
@@ -144,7 +145,7 @@ class SupervisedDataset(Dataset):
         ]
         targets = [f"{example['output']}{tokenizer.eos_token}" for example in list_data_dict]
 
-        logging.warning("Tokenizing inputs... This may take some time...")
+        logger.warning("Tokenizing inputs... This may take some time...")
         data_dict = preprocess(sources, targets, tokenizer)
 
         self.input_ids = data_dict["input_ids"]
