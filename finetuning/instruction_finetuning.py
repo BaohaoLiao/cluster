@@ -212,7 +212,7 @@ def train():
     logger.warning(model)
 
     for name, p in model.named_parameters():
-        logger.warning(name, p.requires_grad)
+        print(name, p.requires_grad)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
