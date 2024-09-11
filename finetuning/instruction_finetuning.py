@@ -237,7 +237,7 @@ def train():
     data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
 
     logger.info("***** Running training *****")
-    logger.info(f"  Num examples = {len(data_module["train_dataset"])}")
+    logger.info(f"  Num examples = {len(data_module['train_dataset'])}")
     logger.info(f"  Num Epochs = {training_args.num_train_epochs}")
     logger.info(f"  Instantaneous batch size per device = {training_args.per_device_train_batch_size}")
     logger.info(f"  Gradient Accumulation steps = {training_args.gradient_accumulation_steps}")
