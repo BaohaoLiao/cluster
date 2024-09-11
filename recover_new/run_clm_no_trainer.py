@@ -62,7 +62,7 @@ from models.llama_layer import CustomLlamaForCausalLM
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-check_min_version("4.43.0")
+check_min_version("4.42.0")
 
 logger = get_logger(__name__)
 
@@ -253,9 +253,7 @@ def parse_args():
     )
     parser.add_argument(
         "--only_train_cluster_params",
-        type=bool,
-        required=False,
-        default=False,
+        action="store_true",
     )
 
     args = parser.parse_args()
