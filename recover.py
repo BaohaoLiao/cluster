@@ -1,4 +1,4 @@
-from recover.kd_train import train
+from recover_new.run_clm_no_trainer import main
 
 if __name__ == "__main__":
-    train()
+    main()
