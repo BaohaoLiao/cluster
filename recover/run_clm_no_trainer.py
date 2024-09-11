@@ -691,9 +691,11 @@ def main():
                 if args.teacher_model_name_or_path is not None:
                     with torch.no_grad():
                         teacher_outputs = teacher_model(**batch)
+                        
                     teacher_logits = teacher_outputs.get("logits")
                     del teacher_outputs
                     student_logits = outputs.get("logits")
+                    del outputs
 
                     def ce_loss(student_logits, teacher_logits):
                         model_output_log_prob = F.log_softmax(student_logits, dim=2)
