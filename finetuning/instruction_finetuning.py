@@ -19,7 +19,7 @@ import copy
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence
 
-from accelerate.logging import get_logger
+import logging
 import torch
 import transformers
 from torch.utils.data import Dataset
@@ -27,7 +27,7 @@ from transformers import Trainer
 
 from models.llama_layer import CustomLlamaForCausalLM
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 IGNORE_INDEX = -100
 DEFAULT_PAD_TOKEN = "[PAD]"
