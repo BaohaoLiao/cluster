@@ -729,7 +729,7 @@ def main():
 
             if (args.logging_steps is not None) and (completed_steps % args.logging_steps == 0):
                 if accelerator.is_main_process:
-                    logger.info(f"  epoch {epoch} step {completed_steps}\t|| loss: {loss.item():.3f}")
+                    logger.info(f"\n  epoch {epoch} step {completed_steps}\t|| loss: {loss.item():.3f}")
 
             if isinstance(checkpointing_steps, int):
                 if completed_steps % checkpointing_steps == 0 and accelerator.sync_gradients:
