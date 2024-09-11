@@ -24,6 +24,9 @@ import utils
 from torch.utils.data import Dataset
 from transformers import Trainer
 
+from models.llama_layer import CustomLlamaForCausalLM
+
+
 IGNORE_INDEX = -100
 DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
@@ -184,9 +187,10 @@ def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
-    model = transformers.AutoModelForCausalLM.from_pretrained(
+    model = CustomLlamaForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         cache_dir=training_args.cache_dir,
+        torch_dtype=torch.bfloat16,
     )
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
