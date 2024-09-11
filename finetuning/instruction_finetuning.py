@@ -13,6 +13,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import io
+import json
 import copy
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence
@@ -20,7 +22,6 @@ from typing import Dict, Optional, Sequence
 from accelerate.logging import get_logger
 import torch
 import transformers
-import utils
 from torch.utils.data import Dataset
 from transformers import Trainer
 
@@ -65,6 +66,19 @@ class TrainingArguments(transformers.TrainingArguments):
         default=512,
         metadata={"help": "Maximum sequence length. Sequences will be right padded (and possibly truncated)."},
     )
+
+
+def _make_r_io_base(f, mode: str):
+    if not isinstance(f, io.IOBase):
+        f = open(f, mode=mode)
+    return f
+
+def jload(f, mode="r"):
+    """Load a .json file into a dictionary."""
+    f = _make_r_io_base(f, mode)
+    jdict = json.load(f)
+    f.close()
+    return jdict
 
 
 def smart_tokenizer_and_embedding_resize(
