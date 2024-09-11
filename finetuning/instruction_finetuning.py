@@ -236,12 +236,12 @@ def train():
 
     data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
 
-    logger.info("***** Running training *****")
-    logger.info(f"  Num examples = {len(data_module['train_dataset'])}")
-    logger.info(f"  Num Epochs = {training_args.num_train_epochs}")
-    logger.info(f"  Instantaneous batch size per device = {training_args.per_device_train_batch_size}")
-    logger.info(f"  Gradient Accumulation steps = {training_args.gradient_accumulation_steps}")
-    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
+    logger.warning("***** Running training *****")
+    logger.warning(f"  Num examples = {len(data_module['train_dataset'])}")
+    logger.warning(f"  Num Epochs = {training_args.num_train_epochs}")
+    logger.warning(f"  Instantaneous batch size per device = {training_args.per_device_train_batch_size}")
+    logger.warning(f"  Gradient Accumulation steps = {training_args.gradient_accumulation_steps}")
+    logger.warning(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
                     
     trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
     trainer.train()
