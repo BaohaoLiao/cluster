@@ -690,7 +690,7 @@ def main():
 
                 if args.teacher_model_name_or_path is not None:
                     with torch.no_grad():
-                        techer_outputs = teacher_model(**batch)
+                        teacher_outputs = teacher_model(**batch)
                     teacher_logits = teacher_outputs.get("logits")
                     del teacher_outputs
                     student_logits = outputs.get("logits")
