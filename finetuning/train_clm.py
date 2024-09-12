@@ -194,9 +194,6 @@ class DataTrainingArguments:
     keep_linebreaks: bool = field(
         default=True, metadata={"help": "Whether to keep line breaks when using TXT files or not."}
     )
-    dataset_dir: Optional[str] = field(
-        default=None, metadata={"help": "The local dir for dataset for offline training."}
-    )
     metric_path: str = field(
         default=None, metadata={"help": "The local metric file for offline training."}
     )
