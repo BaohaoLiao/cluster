@@ -52,7 +52,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
-import models
+from models.llama_layer import CustomLlamaForCausalLM
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.37.0.dev0")
@@ -73,7 +73,6 @@ class ModelArguments:
             )
         },
     )
-    state_dict_path: Optional[str] = field(default=None)
     model_type: Optional[str] = field(
         default=None,
         metadata={"help": "If training from scratch, pass a model type from the list: " + ", ".join(MODEL_TYPES)},
@@ -281,9 +280,7 @@ def main():
     set_seed(training_args.seed)
 
     # Get the datasets
-    if data_args.dataset_dir is not None:
-        raw_datasets = datasets.load_from_disk(data_args.dataset_dir)
-    elif data_args.dataset_name is not None:
+    if data_args.dataset_name is not None:
         # Downloading and loading a dataset from the hub.
         raw_datasets = load_dataset(
             data_args.dataset_name,
@@ -374,14 +371,14 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script. "
             "You can do it from another script, save it, and load it from here, using --tokenizer_name."
         )
-    
-    if "llama" in model_args.model_name_or_path.lower():
-        model = models.CustomLlamaForCausalLM(config).to(torch.bfloat16)
-        if model_args.state_dict_path is not None:
-            logger.info(f"Load state dicts from {model_args.state_dict_path}")
-            state_dicts = torch.load(model_args.state_dict_path, map_location="cpu")
-            model.load_state_dict(state_dicts, strict=True)
 
+    model = CustomLlamaForCausalLM.from_pretrained(
+            model_args.model_name_or_path,
+            config=config,
+            low_cpu_mem_usage=model_args.low_cpu_mem_usage,
+            trust_remote_code=model_args.trust_remote_code,
+            torch_dtype=torch.bfloat16,
+        )
     logger.info(model)
     
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
