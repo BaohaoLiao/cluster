@@ -67,7 +67,7 @@ class ModelArguments:
 
 @dataclass
 class DataArguments:
-    data_name: str = field(default="gsm8k", metadata={"help": "Dataset name."})
+    dataset_name: str = field(default="gsm8k", metadata={"help": "Dataset name."})
     batch_size: int = field(default=16, metadata={"help": "Evaluation batch size."})
 
 
@@ -134,7 +134,7 @@ def evaluation(model_args, data_args):
 
     # Load data
     logging.warning("Downloading Data")
-    dataset = load_dataset(data_args.data_name, "main")
+    dataset = load_dataset(data_args.dataset_name, "main")
     test_set = dataset['test']
 
     logging.warning("Formatting inputs...")

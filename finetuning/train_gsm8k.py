@@ -47,7 +47,7 @@ class ModelArguments:
 
 @dataclass
 class DataArguments:
-    data_name: str = field(
+    dataset_name: str = field(
         default="gsm8k",
         metadata={"help": "Dataset name."}
     )
@@ -166,7 +166,7 @@ class DataCollatorForSupervisedDataset(object):
 def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, data_args) -> Dict:
     """Make dataset and collator for supervised fine-tuning."""
     logging.warning("Downloading Data")
-    dataset = load_dataset(data_args.data_name, "main")
+    dataset = load_dataset(data_args.dataset_name, "main")
     train_set = dataset['train']
     train_dataset = SupervisedDataset(raw_data=train_set, tokenizer=tokenizer)
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
