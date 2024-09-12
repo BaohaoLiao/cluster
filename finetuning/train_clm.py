@@ -135,6 +135,7 @@ class ModelArguments:
             )
         },
     )
+    only_train_cluster_params: bool = field(default=False)
 
 @dataclass
 class DataTrainingArguments:
@@ -376,7 +377,16 @@ def main():
             trust_remote_code=model_args.trust_remote_code,
             torch_dtype=torch.bfloat16,
         )
+    if model_args.only_train_cluster_params:
+        for name, param in model.named_parameters():
+            if "cluster" in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.info(model)
+    logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
     
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
