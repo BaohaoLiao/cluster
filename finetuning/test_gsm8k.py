@@ -44,8 +44,8 @@ QUESTION_PROMPT = "\nAnswer the above question. First think step by step and the
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(
-        default="LoftQ/Mistral-7B-v0.1-4bit-64rank",
-        metadata={"help": "Path to the model."},
+        default=None,
+        metadata={"help": "Don't set manually."},
     )
     ckpt_dir: Optional[str] = field(
         default=None,
