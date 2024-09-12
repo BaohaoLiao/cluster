@@ -792,22 +792,6 @@ def main():
                 output_dir = os.path.join(args.output_dir, output_dir)
             accelerator.save_state(output_dir)
 
-    # Evaluation at the end
-    model.eval()
-    losses = []
-    for step, batch in enumerate(eval_dataloader):
-        with torch.no_grad():
-            outputs = model(**batch)
-        loss = outputs.loss
-        losses.append(accelerator.gather_for_metrics(loss.repeat(args.per_device_eval_batch_size)))
-    losses = torch.cat(losses)
-    try:
-        eval_loss = torch.mean(losses)
-        perplexity = math.exp(eval_loss)
-    except OverflowError:
-        perplexity = float("inf")
-    logger.info(f"epoch {epoch} || perplexity: {perplexity} eval_loss: {eval_loss}")
-
     if args.with_tracking:
         accelerator.end_training()
 
