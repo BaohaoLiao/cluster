@@ -37,12 +37,12 @@ def main(model_name_or_path, save_dir, shard_idx, num_shards, device="cuda:0"):
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    for j in range(3 + outer_loop, 4):
+    for j in range(3 + outer_loop, 6):
         for i in tqdm(range(int(shard_idx) * n_vocab + inner_loop, (int(shard_idx)+1) * n_vocab)):
             logging.info(f"Generating {i}th sample for {shard_idx}/{num_shards} shard")
             input_ids = torch.tensor([[i]]).to(device)
             outputs1 = model.generate(input_ids, do_sample=False, max_length=j)
-            outputs = model.generate(outputs1, do_sample=True, max_length=1024)
+            outputs = model.generate(outputs1, do_sample=True, max_length=2048)
             gen_text = tokenizer.batch_decode(outputs, skip_special_tokens=True)
             text_dict = {"text" : gen_text[0]}
             with open(f"{save_dir}/gen.chunk.{str(shard_idx).zfill(2)}-{str(num_shards).zfill(2)}.json", "a") as f:
