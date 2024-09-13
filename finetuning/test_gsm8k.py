@@ -200,8 +200,7 @@ def evaluation(model_args, data_args):
 
     accuracy = compute_accuracy(answer, ans_pred_list)
 
-    print(f"adapter: {model_args.adapter_name_or_path} | GSM8K test accuracy: {100*accuracy:.2f}% | "
-          f"full precision: {model_args.full_precision}")
+    print(f"checkpoint: {model_args.model_name_or_path} | GSM8K test accuracy: {100*accuracy:.2f}% ")
 
 
 def extract_answer_number(sentence: str) -> float:
