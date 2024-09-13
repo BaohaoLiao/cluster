@@ -533,8 +533,7 @@ def main():
             k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
             for k, t in concatenated_examples.items()
         }
-        if args.teacher_model_name_or_path is None: # only use teacher logit for distillation
-            result["labels"] = result["input_ids"].copy()
+        result["labels"] = result["input_ids"].copy()
         return result
 
     # Note that with `batched=True`, this map processes 1,000 texts together, so group_texts throws away a remainder
@@ -747,7 +746,6 @@ def main():
                 outputs = model(**batch)
 
             loss = outputs.loss
-            logger.info(loss)
             losses.append(accelerator.gather_for_metrics(loss.repeat(args.per_device_eval_batch_size)))
 
         losses = torch.cat(losses)
