@@ -557,6 +557,16 @@ def main():
                 load_from_cache_file=not args.overwrite_cache,
                 desc=f"Grouping texts in chunks of {block_size}",
             )
+
+        train_dataset = lm_datasets["train"]
+        eval_dataset = lm_datasets["validation"]
+
+        train_dataloader = DataLoader(
+            train_dataset, shuffle=True, collate_fn=default_data_collator, batch_size=args.per_device_train_batch_size
+        )
+        eval_dataloader = DataLoader(
+            eval_dataset, collate_fn=default_data_collator, batch_size=args.per_device_eval_batch_size
+        )
     
     else:
         def tokenize_function_streaming(examples):
@@ -584,20 +594,15 @@ def main():
                 remove_columns=column_names,
             )
 
-    train_dataset = lm_datasets["train"]
-    eval_dataset = lm_datasets["validation"]
+        train_dataset = lm_datasets["train"]
+        eval_dataset = lm_datasets["validation"]
 
-    # Log a few random samples from the training set:
-    #for index in random.sample(range(len(train_dataset)), 3):
-    #    logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
-
-    # DataLoaders creation:
-    train_dataloader = DataLoader(
-        train_dataset, shuffle=True, collate_fn=default_data_collator, batch_size=args.per_device_train_batch_size
-    )
-    eval_dataloader = DataLoader(
-        eval_dataset, collate_fn=default_data_collator, batch_size=args.per_device_eval_batch_size
-    )
+        train_dataloader = DataLoader(
+            train_dataset, shuffle=False, collate_fn=default_data_collator, batch_size=args.per_device_train_batch_size
+        )
+        eval_dataloader = DataLoader(
+            eval_dataset, collate_fn=default_data_collator, batch_size=args.per_device_eval_batch_size
+        )
 
     # Optimizer
     # Split weights in two groups, one with weight decay and the other not.
