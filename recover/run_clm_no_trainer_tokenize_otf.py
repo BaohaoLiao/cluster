@@ -539,7 +539,8 @@ def main():
                 k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
                 for k, t in concatenated_examples.items()
             }
-            result["labels"] = result["input_ids"].copy()
+            #result["labels"] = result["input_ids"].copy()
+            del result["attention_mask"]
             return result
 
         # Note that with `batched=True`, this map processes 1,000 texts together, so group_texts throws away a remainder
@@ -730,6 +731,7 @@ def main():
         else:
             active_dataloader = train_dataloader
         for step, batch in enumerate(active_dataloader):
+            batch["labels"] = batch["input_ids"].copy()
             with accelerator.accumulate(model):
                 outputs = model(**batch)
 
