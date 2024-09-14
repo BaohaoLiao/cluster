@@ -494,7 +494,6 @@ def main():
     # Preprocessing the datasets.
     # First we tokenize all the texts.
     column_names = raw_datasets["train"].column_names
-    print("??????????", column_names)
     text_column_name = "text" # if "text" in column_names else column_names[0]
 
     if args.block_size is None:
@@ -582,10 +581,7 @@ def main():
             lm_datasets = raw_datasets.map(
                 tokenize_function_streaming,
                 batched=True,
-                num_proc=args.preprocessing_num_workers,
                 remove_columns=column_names,
-                load_from_cache_file=not args.overwrite_cache,
-                desc="Running tokenizer on dataset",
             )
 
     train_dataset = lm_datasets["train"]
