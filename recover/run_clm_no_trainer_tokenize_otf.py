@@ -494,7 +494,8 @@ def main():
     # Preprocessing the datasets.
     # First we tokenize all the texts.
     column_names = raw_datasets["train"].column_names
-    text_column_name = "text" if "text" in column_names else column_names[0]
+    print("??????????", column_names)
+    text_column_name = "text" # if "text" in column_names else column_names[0]
 
     if args.block_size is None:
         block_size = tokenizer.model_max_length
