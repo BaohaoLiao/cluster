@@ -737,7 +737,11 @@ def main():
         else:
             active_dataloader = train_dataloader
         for step, batch in enumerate(active_dataloader):
-            batch["labels"] = batch["input_ids"].copy()
+            for k, v in batch.items():
+                print(k, v.size())
+
+            if not args.streaming:
+                batch["labels"] = batch["input_ids"].copy()
             with accelerator.accumulate(model):
                 outputs = model(**batch)
 
