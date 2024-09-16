@@ -514,7 +514,9 @@ def main():
 
     if not args.streaming:
         def tokenize_function(examples):
-            return tokenizer(examples[text_column_name])
+            result = tokenizer(examples[text_column_name])
+            del result["attention_mask"]
+            return result
 
         with accelerator.main_process_first():
             tokenized_datasets = raw_datasets.map(
@@ -540,7 +542,6 @@ def main():
                 for k, t in concatenated_examples.items()
             }
             #result["labels"] = result["input_ids"].copy()
-            del result["attention_mask"]
             return result
 
         # Note that with `batched=True`, this map processes 1,000 texts together, so group_texts throws away a remainder
