@@ -623,10 +623,13 @@ def main():
 
     # Scheduler and math around the number of training steps.
     overrode_max_train_steps = False
-    num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
-    if args.max_train_steps is None:
-        args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
-        overrode_max_train_steps = True
+    if not args.streaming:
+        num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
+        if args.max_train_steps is None:
+            args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
+            overrode_max_train_steps = True
+    else:
+        assert args.max_train_steps is not None
 
     lr_scheduler = get_scheduler(
         name=args.lr_scheduler_type,
@@ -651,11 +654,12 @@ def main():
         model.tie_weights()
 
     # We need to recalculate our total training steps as the size of the training dataloader may have changed.
-    num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
-    if overrode_max_train_steps:
-        args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
-    # Afterwards we recalculate our number of training epochs
-    args.num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
+    if not args.streaming:
+        num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
+        if overrode_max_train_steps:
+            args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
+        # Afterwards we recalculate our number of training epochs
+        args.num_train_epochs = math.ceil(args.max_train_steps / num_update_steps_per_epoch)
 
     # Figure out how many steps we should save the Accelerator states
     checkpointing_steps = args.checkpointing_steps
