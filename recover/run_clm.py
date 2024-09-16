@@ -460,6 +460,7 @@ def main():
     else:
         column_names = list(raw_datasets["validation"].features)
     """
+    column_names = ["text"]
     text_column_name = "text" # if "text" in column_names else column_names[0]
 
     # since this will be pickled to avoid _LazyModule error in Hasher force logger loading before tokenize_function
