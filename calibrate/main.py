@@ -114,8 +114,8 @@ def main(args):
         args.ori_model_name_or_path, 
         config=ori_config, 
         device_map='cpu', 
-        #torch_dtype=torch.bfloat16
-        torch_dtype=ori_config.torch_dtype,
+        torch_dtype=torch.bfloat16
+        #torch_dtype=ori_config.torch_dtype,
     )
     
     clus_config = AutoConfig.from_pretrained(args.clus_model_name_or_path)
@@ -123,8 +123,8 @@ def main(args):
         args.clus_model_name_or_path,
         config=clus_config,
         device_map='cpu', 
-        #torch_dtype=torch.bfloat16,
-        torch_dtype=clus_config.torch_dtype,
+        torch_dtype=torch.bfloat16,
+        #torch_dtype=clus_config.torch_dtype,
     )
     """
     clus_model = models.CustomLlamaForCausalLM(clus_config).to(torch.bfloat16)
