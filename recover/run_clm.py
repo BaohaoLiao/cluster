@@ -461,6 +461,7 @@ def main():
                 output.requires_grad_(True)
             model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
         model.gradient_checkpointing_enable()
+        model.config.use_cache=False
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.
