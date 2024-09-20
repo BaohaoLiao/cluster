@@ -377,6 +377,9 @@ def main():
                 **dataset_args,
             )
 
+    if data_args.max_train_samples is not None:
+        raw_datasets["train"] = raw_datasets["train"].shuffle(seed=training_args.seed).select(range(data_args.max_train_samples))
+
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.
 
