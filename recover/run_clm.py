@@ -452,6 +452,16 @@ def main():
     logger.info(model)
     logger.info(f"  Num trainable / Num total = {trainable_params/total_params:.5f} ({trainable_params} / {total_params})")
 
+    if training_args.gradient_checkpointing:
+        logger.info("Use gradient checkpointing.")
+        if hasattr(model, "enable_input_require_grads"):
+            model.enable_input_require_grads()
+        else:
+            def make_inputs_require_grad(module, input, output):
+                output.requires_grad_(True)
+            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+        model.gradient_checkpointing_enable()
+
     # Preprocessing the datasets.
     # First we tokenize all the texts.
     """
