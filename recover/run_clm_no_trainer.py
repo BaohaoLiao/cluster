@@ -265,6 +265,12 @@ def parse_args():
        type=int,
        default=None
     )
+    parser.add_argument(
+        "--gradient_checkpointing",
+        action="store_true",
+        help="",
+    )
+
 
     args = parser.parse_args()
 
@@ -465,6 +471,17 @@ def main():
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.info(model)
+
+    if args.gradient_checkpointing:
+        logger.info("Use gradient checkpointing.")
+        if hasattr(model, "enable_input_require_grads"):
+            model.enable_input_require_grads()
+        else:
+            def make_inputs_require_grad(module, input, output):
+                output.requires_grad_(True)
+            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+        model.gradient_checkpointing_enable()
+        model.config.use_cache=False
 
     if args.teacher_model_name_or_path is not None:
         logger.info("Loading teacher model ...")
