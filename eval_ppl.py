@@ -21,13 +21,19 @@ def main(args):
     # Load model and tokenizer
     args.device = torch.device("cuda")
     config = AutoConfig.from_pretrained(args.model_name_or_path)
-    model = models.ClusterLayerLlamaForCausalLM.from_pretrained(
+    if "llama" in args.model_name_or_path.split("/")[-1].lower():
+        ClusCompModel = models.ClusterLayerLlamaForCausalLM
+    elif "mistral" in args.model_name_or_path.split("/")[-1].lower():
+        ClusCompModel = models.ClusterLayerMistralForCausalLM
+
+    model = ClusCompModel.from_pretrained(
         args.model_name_or_path,
         config=config,
         device_map='cpu', 
         #torch_dtype=torch.bfloat16
         torch_dtype=config.torch_dtype,
     )
+
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     assert args.seqlen <= config.max_position_embeddings, "The sequence length of calibration samples exceed the model's"
     model.eval()

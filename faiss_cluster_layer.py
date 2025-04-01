@@ -63,8 +63,16 @@ def main(model_name_or_path: str, save_dir: str, ngpu: int, size: int=4, ncluste
     #config = transformers.AutoConfig.from_pretrained(model_name_or_path)
     #torch_dtype = config.torch_dtype
 
-    layers = ['q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 
-              'gate_proj.weight', 'up_proj.weight', 'down_proj.weight']
+    if "opt" in model_name_or_path.split("/")[-1].lower():
+        layers = [
+            'q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'out_proj.weight', 
+            'fc1.weight', 'fc2.weight'
+        ]
+    else:
+        layers = [
+            'q_proj.weight', 'k_proj.weight', 'v_proj.weight', 'o_proj.weight', 
+            'gate_proj.weight', 'up_proj.weight', 'down_proj.weight'
+        ]
     
     ws = OrderedDict()
     for k, v in model.state_dict().items():
